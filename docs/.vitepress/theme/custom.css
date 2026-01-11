@@ -982,7 +982,7 @@ a, button, .VPFeature {
 /* Decorated Section Component */
 .decorated-section {
   position: relative;
-  padding: 2rem;
+  padding: 0.75rem 2rem 2rem;
   margin: 2rem 0;
   background: linear-gradient(135deg, rgba(250, 248, 245, 0.5) 0%, rgba(245, 240, 232, 0.5) 100%);
   border-radius: 16px;
@@ -1020,7 +1020,7 @@ a, button, .VPFeature {
   z-index: 0;
 }
 
-.decorated-section.pattern-subtle > * {
+.decorated-section.pattern-subtle > *:not(.corner) {
   position: relative;
   z-index: 1;
 }
@@ -1107,4 +1107,184 @@ a, button, .VPFeature {
 
 .dark .vp-doc hr::before {
   filter: sepia(0.6) saturate(1.2) hue-rotate(-10deg) brightness(0.7);
+}
+
+/* ===== Ruqyah Page Styles ===== */
+
+/* Center page title with dominant styling */
+.vp-doc h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-brown-deep);
+  background: linear-gradient(135deg, var(--color-brown-deep) 0%, var(--color-gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Category section animations */
+.category-section {
+  animation: categoryFadeIn 0.6s ease-out backwards;
+}
+
+.category-section:nth-child(1) { animation-delay: 0.1s; }
+.category-section:nth-child(2) { animation-delay: 0.2s; }
+.category-section:nth-child(3) { animation-delay: 0.3s; }
+.category-section:nth-child(4) { animation-delay: 0.4s; }
+.category-section:nth-child(5) { animation-delay: 0.5s; }
+.category-section:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes categoryFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Navigation table in DecoratedSection */
+.decorated-section table {
+  margin: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.decorated-section th {
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-brown-deep) 100%);
+}
+
+.decorated-section td {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.decorated-section tr:nth-child(even) td {
+  background: rgba(254, 247, 237, 0.5);
+}
+
+.decorated-section tr:hover td {
+  background: rgba(217, 119, 6, 0.15);
+}
+
+.dark .decorated-section td {
+  background: rgba(36, 28, 20, 0.5);
+}
+
+.dark .decorated-section tr:nth-child(even) td {
+  background: rgba(46, 36, 26, 0.5);
+}
+
+/* Section title with emoji icon styling - centered and dominant */
+.decorated-section .section-title,
+.vp-doc .decorated-section .section-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-direction: row-reverse;
+  text-align: center;
+  width: 100%;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--color-brown-deep);
+  letter-spacing: 0.02em;
+  padding-bottom: 1rem;
+  margin-top: 0 !important;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--color-gold);
+  position: relative;
+}
+
+/* Section intro paragraph styling */
+.decorated-section > p:first-of-type {
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 2;
+  color: var(--vp-c-text-2);
+  margin-bottom: 1.5rem;
+  padding: 0 1rem;
+  font-style: italic;
+}
+
+.dark .decorated-section > p:first-of-type {
+  color: var(--vp-c-text-2);
+}
+
+/* Decorative dots under section title */
+.decorated-section .section-title::after {
+  content: '◆ ◇ ◆';
+  position: absolute;
+  bottom: -1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.5rem;
+  color: var(--color-gold);
+  letter-spacing: 0.3rem;
+  opacity: 0.8;
+}
+
+/* FramedBox enhancements for intro/outro */
+.framed-box h3 {
+  color: var(--color-brown-deep);
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.framed-box p {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+
+.framed-box p:last-child {
+  margin-bottom: 0;
+}
+
+/* Anchor link offset for fixed header */
+.category-section[id] {
+  scroll-margin-top: 80px;
+}
+
+/* Quick nav table links */
+.decorated-section a {
+  color: var(--color-brown-deep);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.decorated-section a:hover {
+  color: var(--color-gold);
+}
+
+.dark .decorated-section a {
+  color: var(--color-gold);
+}
+
+.dark .decorated-section a:hover {
+  color: var(--color-gold-light);
+}
+
+/* Dark mode: section title accent */
+.dark .decorated-section .section-title::after {
+  color: var(--color-gold-light);
+}
+
+/* Dark mode: h1 gradient */
+.dark .vp-doc h1 {
+  background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-light) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
