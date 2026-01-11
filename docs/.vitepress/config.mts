@@ -16,6 +16,29 @@ export default defineConfig({
   themeConfig: {
     siteTitle: 'د. محمد ممدوح البربري',
 
+    // Arabic translations for UI strings
+    darkModeSwitchLabel: 'المظهر',
+    lightModeSwitchTitle: 'الوضع الفاتح',
+    darkModeSwitchTitle: 'الوضع الداكن',
+    returnToTopLabel: 'العودة للأعلى',
+    sidebarMenuLabel: 'القائمة',
+    outline: {
+      label: 'محتويات الصفحة'
+    },
+    docFooter: {
+      prev: 'السابق',
+      next: 'التالي'
+    },
+    lastUpdated: {
+      text: 'آخر تحديث'
+    },
+    notFound: {
+      title: 'الصفحة غير موجودة',
+      quote: 'لم نتمكن من العثور على الصفحة التي تبحث عنها.',
+      linkLabel: 'العودة للرئيسية',
+      linkText: 'العودة للرئيسية'
+    },
+
     nav: [
       { text: 'الرئيسية', link: '/' },
       { text: 'الرقية الشرعية', link: '/ruqyah' }
