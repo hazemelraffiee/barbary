@@ -1,7 +1,7 @@
 :root {
   /* Font family */
-  --vp-font-family-base: 'Noto Naskh Arabic', serif;
-  --vp-font-family-mono: 'Noto Naskh Arabic', serif;
+  --vp-font-family-base: 'Amiri', serif;
+  --vp-font-family-mono: 'Amiri', serif;
 
   /* ===== Warm Earth Tone Color Scheme ===== */
 
@@ -55,7 +55,7 @@ html {
 }
 
 body {
-  font-family: 'Noto Naskh Arabic', serif;
+  font-family: 'Amiri', serif;
   text-align: right;
 }
 
@@ -1212,7 +1212,6 @@ html {
   color: var(--vp-c-text-2);
   margin-bottom: 1.5rem;
   padding: 0 1rem;
-  font-style: italic;
 }
 
 .dark .decorated-section > p:first-of-type {
