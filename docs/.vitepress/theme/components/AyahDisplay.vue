@@ -16,6 +16,9 @@ const text = ref('')
 const isLoading = ref(true)
 const error = ref(false)
 
+// Cache for local quran data
+let quranDataCache = null
+
 // Surah names in Arabic
 const surahNames = {
   1: 'الفاتحة', 2: 'البقرة', 3: 'آل عمران', 4: 'النساء', 5: 'المائدة',
@@ -48,7 +51,44 @@ const reference = computed(() => {
   return `${surahName} : ${props.ayah}`
 })
 
-async function fetchAyah(surahNumber, ayahNumber) {
+const surahHeaderUrl = computed(() => {
+  return `/barbary/surah-headers/surah-${props.surah}.svg`
+})
+
+// Load local quran data (pre-fetched at build time)
+async function loadLocalQuranData() {
+  if (quranDataCache) return quranDataCache
+  try {
+    const response = await fetch('/barbary/quran-data.json')
+    if (response.ok) {
+      quranDataCache = await response.json()
+      return quranDataCache
+    }
+  } catch {
+    // Fall back to API
+  }
+  return null
+}
+
+// Get ayah from local data
+function getLocalAyah(quranData, surahNumber, ayahNumber) {
+  const surah = quranData[surahNumber]
+  if (!surah) return null
+  const ayah = surah.ayahs.find(a => a.number === ayahNumber)
+  return ayah?.text || null
+}
+
+// Get ayah range from local data
+function getLocalAyahRange(quranData, surahNumber, startAyah, endAyah) {
+  const surah = quranData[surahNumber]
+  if (!surah) return null
+  return surah.ayahs
+    .filter(a => a.number >= startAyah && a.number <= endAyah)
+    .map(a => ({ numberInSurah: a.number, text: a.text }))
+}
+
+// Fallback: fetch from API
+async function fetchAyahFromApi(surahNumber, ayahNumber) {
   try {
     const response = await fetch(
       `https://api.alquran.cloud/v1/ayah/${surahNumber}:${ayahNumber}`
@@ -61,7 +101,8 @@ async function fetchAyah(surahNumber, ayahNumber) {
   }
 }
 
-async function fetchSurah(surahNumber) {
+// Fallback: fetch surah from API
+async function fetchSurahFromApi(surahNumber) {
   try {
     const response = await fetch(
       `https://api.alquran.cloud/v1/surah/${surahNumber}`
@@ -87,25 +128,17 @@ function removeDiacritics(text) {
 
 // Remove Basmalah from beginning of verse (except for Al-Fatiha)
 function removeBasmalah(text, surahNumber, ayahNumber) {
-  if (surahNumber === 1) return text // Keep Basmalah for Al-Fatiha
-  if (ayahNumber !== 1) return text // Only first ayah has Basmalah
+  if (surahNumber === 1) return text
+  if (ayahNumber !== 1) return text
 
-  // Normalize text for comparison
   const normalized = removeDiacritics(text)
-
-  // Check if starts with بسم (normalized)
   if (!normalized.startsWith('بسم')) return text
 
-  // Find the position after الرحيم in normalized text
   const rahimPatterns = ['الرحیم ', 'الرحيم ', 'ٱلرحیم ', 'ٱلرحيم ']
   for (const pattern of rahimPatterns) {
     const idx = normalized.indexOf(pattern)
     if (idx !== -1) {
-      // Find corresponding position in original text
-      // Count characters up to and including the pattern
       const normalizedPrefix = normalized.slice(0, idx + pattern.length)
-
-      // Find where this maps to in original text
       let origIdx = 0
       let normCount = 0
       while (origIdx < text.length && normCount < normalizedPrefix.length) {
@@ -114,40 +147,59 @@ function removeBasmalah(text, surahNumber, ayahNumber) {
         if (normChar.length > 0) normCount++
         origIdx++
       }
-
       return text.slice(origIdx).trim()
     }
   }
-
   return text
 }
 
-async function fetchAyahRange(surahNumber, startAyah, endAyah) {
-  // Fetch entire surah and extract the range (more efficient)
-  const ayahs = await fetchSurah(surahNumber)
-  if (!ayahs) return null
-
-  const verses = ayahs
-    .filter(a => a.numberInSurah >= startAyah && a.numberInSurah <= endAyah)
-    .map(a => {
-      const cleanText = removeBasmalah(a.text, surahNumber, a.numberInSurah)
-      return `${cleanText} ﴿${toArabicNumber(a.numberInSurah)}﴾`
-    })
-
-  return verses.join(' ')
+// Format verses with markers
+function formatVerses(ayahs, surahNumber) {
+  return ayahs.map(a => {
+    const cleanText = removeBasmalah(a.text, surahNumber, a.numberInSurah)
+    return `${cleanText} ﴿${toArabicNumber(a.numberInSurah)}﴾`
+  }).join(' ')
 }
 
 onMounted(async () => {
   try {
     const ayahStr = String(props.ayah)
+    const quranData = await loadLocalQuranData()
 
     if (ayahStr.includes('-')) {
       // Range like "97-98"
       const [start, end] = ayahStr.split('-').map(Number)
-      text.value = await fetchAyahRange(props.surah, start, end)
+
+      // Try local data first
+      let ayahs = quranData ? getLocalAyahRange(quranData, props.surah, start, end) : null
+
+      // Fall back to API
+      if (!ayahs) {
+        const apiAyahs = await fetchSurahFromApi(props.surah)
+        if (apiAyahs) {
+          ayahs = apiAyahs
+            .filter(a => a.numberInSurah >= start && a.numberInSurah <= end)
+        }
+      }
+
+      if (ayahs && ayahs.length > 0) {
+        text.value = formatVerses(ayahs, props.surah)
+      }
     } else {
       // Single ayah
-      text.value = await fetchAyah(props.surah, Number(ayahStr))
+      const ayahNum = Number(ayahStr)
+
+      // Try local data first
+      let ayahText = quranData ? getLocalAyah(quranData, props.surah, ayahNum) : null
+
+      // Fall back to API
+      if (!ayahText) {
+        ayahText = await fetchAyahFromApi(props.surah, ayahNum)
+      }
+
+      if (ayahText) {
+        text.value = `${ayahText} ﴿${toArabicNumber(ayahNum)}﴾`
+      }
     }
 
     if (!text.value) {
@@ -163,6 +215,7 @@ onMounted(async () => {
 
 <template>
   <div class="ayah-display">
+    <img :src="surahHeaderUrl" :alt="reference" class="surah-header" />
     <div v-if="isLoading" class="ayah-loading">
       جاري التحميل...
     </div>
@@ -171,7 +224,6 @@ onMounted(async () => {
     </div>
     <div v-else class="ayah-content">
       <p class="ayah-text">{{ text }}</p>
-      <span class="ayah-reference">{{ reference }}</span>
     </div>
   </div>
 </template>
@@ -187,6 +239,14 @@ onMounted(async () => {
   background: linear-gradient(135deg, rgba(254, 243, 199, 0.3) 0%, rgba(254, 215, 170, 0.2) 100%);
   border-radius: 1rem;
   border: 1px solid rgba(217, 119, 6, 0.2);
+}
+
+.surah-header {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  margin-bottom: 0.25rem;
+  filter: sepia(0.3) brightness(0.9);
 }
 
 .ayah-loading,
@@ -236,12 +296,12 @@ onMounted(async () => {
   border-color: rgba(217, 119, 6, 0.3);
 }
 
-.dark .ayah-text {
-  color: #fef3c7;
+.dark .surah-header {
+  filter: sepia(0.2) brightness(1.1) invert(0.85) hue-rotate(180deg);
 }
 
-.dark .ayah-reference {
-  color: #fcd34d;
+.dark .ayah-text {
+  color: #fef3c7;
 }
 
 .dark .ayah-loading,
