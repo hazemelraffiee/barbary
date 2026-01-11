@@ -6,6 +6,7 @@ import OrnamentalDivider from './components/OrnamentalDivider.vue'
 import DecoratedSection from './components/DecoratedSection.vue'
 import FramedBox from './components/FramedBox.vue'
 import TeacherAvatar from './components/TeacherAvatar.vue'
+import AyahDisplay from './components/AyahDisplay.vue'
 
 export default {
   extends: DefaultTheme,
@@ -15,5 +16,6 @@ export default {
     app.component('DecoratedSection', DecoratedSection)
     app.component('FramedBox', FramedBox)
     app.component('TeacherAvatar', TeacherAvatar)
+    app.component('AyahDisplay', AyahDisplay)
   }
 }

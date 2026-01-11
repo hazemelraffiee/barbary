@@ -10,11 +10,16 @@ export default defineConfig({
   head: [
     ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
     ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
-    ['link', { href: 'https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap', rel: 'stylesheet' }],
+    ['link', { href: 'https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap', rel: 'stylesheet' }],
   ],
 
   themeConfig: {
     siteTitle: 'د. محمد ممدوح البربري',
+
+    nav: [
+      { text: 'الرئيسية', link: '/' },
+      { text: 'الرقية الشرعية', link: '/ruqyah' }
+    ],
 
     socialLinks: [
       {
