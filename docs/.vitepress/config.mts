@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+  base: '/barbary/',
   lang: 'ar',
   dir: 'rtl',
   title: 'د. محمد ممدوح البربري',
