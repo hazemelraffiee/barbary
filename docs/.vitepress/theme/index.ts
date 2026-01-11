@@ -7,6 +7,7 @@ import DecoratedSection from './components/DecoratedSection.vue'
 import FramedBox from './components/FramedBox.vue'
 import TeacherAvatar from './components/TeacherAvatar.vue'
 import AyahDisplay from './components/AyahDisplay.vue'
+import SectionIndex from './components/SectionIndex.vue'
 
 export default {
   extends: DefaultTheme,
@@ -17,5 +18,6 @@ export default {
     app.component('FramedBox', FramedBox)
     app.component('TeacherAvatar', TeacherAvatar)
     app.component('AyahDisplay', AyahDisplay)
+    app.component('SectionIndex', SectionIndex)
   }
 }
